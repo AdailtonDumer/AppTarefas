@@ -1,5 +1,5 @@
 import React , { useState } from 'react'
-import {View, Text, StyleSheet, SafeAreaView,StatusBar, TouchableOpacity, FlatList , Modal} from 'react-native'
+import {View, Text, StyleSheet, SafeAreaView,StatusBar, TouchableOpacity, FlatList , Modal, TextInput} from 'react-native'
 import {Ionicons} from '@expo/vector-icons'
 import TaskList from './src/Components/TaskList'
 import * as Animatable from 'react-native-animatable'
@@ -30,12 +30,25 @@ export default function App(){
 
       <Modal animationType='slide' transparent={false} visible={openModal}>
         <SafeAreaView style={styles.container}>
+
           <View style={styles.header}>
-            <TouchableOpacity >
+            <TouchableOpacity onPress={()=>setOpenModal(false)} >
               <Ionicons name='ios-arrow-back' size={30} color='white'/>
             </TouchableOpacity>
             <Text style={styles.textHeader}>Nova Tarefa</Text>
           </View>
+
+          <Animatable.View style={styles.content} animation='fadeInUp' useNativeDriver>
+            <TextInput 
+            style={styles.inputTask}
+            placeholder="Digite a sua tarefa:"
+            multiline
+            />
+            <TouchableOpacity style={styles.handleAdd}> 
+              <Text style={styles.handleAddText}>Adicionar Tarefa</Text>
+            </TouchableOpacity>
+          </Animatable.View>
+
         </SafeAreaView>
       </Modal>
 
@@ -88,10 +101,35 @@ const styles = StyleSheet.create({
     padding:15,
     height:50,
     flexDirection:'row',
+    maxHeight:60,
+    alignItems:'center'
   },
   textHeader:{
     color:'white',
     fontSize:20,
     padding:10
+  },
+  content:{
+    marginTop:20,
+    marginHorizontal:8,
+  },
+  inputTask:{
+    backgroundColor:'white',
+    height:86,
+    color:'black',
+    textAlignVertical:'top',
+    padding:8,
+    borderRadius:5
+  },
+  handleAdd:{
+    backgroundColor:'white',
+    marginTop:20,
+    height:40,
+    alignItems:'center',
+    justifyContent:'center',
+    borderRadius:8
+  },
+  handleAddText:{
+    fontSize:18
   }
 })
