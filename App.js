@@ -1,19 +1,55 @@
-import React , { useState } from 'react'
-import {View, Text, StyleSheet, SafeAreaView,StatusBar, TouchableOpacity, FlatList , Modal, TextInput} from 'react-native'
+import React , { useState, useCallback, useEffect } from 'react'
+import {View, Text, StyleSheet, SafeAreaView,StatusBar, TouchableOpacity, FlatList , Modal, TextInput}  from 'react-native'
 import {Ionicons} from '@expo/vector-icons'
 import TaskList from './src/Components/TaskList'
 import * as Animatable from 'react-native-animatable'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const AnimatedBtn = Animatable.createAnimatableComponent(TouchableOpacity)
 
 export default function App(){
-  const [task, setTask] = useState([
-    {key:1, task:'comprar 1aadasdasd asd asdabsdlasd açsjda sdasdjasdjasda sdasda sdjasdj'},
-    {key:2, task:'comprar 2'},
-    {key:3, task:'comprar 3'},
-    {key:4, task:'comprar 2'},
-  ])
+
+  useEffect(()=>{
+    async function LoadItens(){
+      const itens = await AsyncStorage.getItem('@test')
+      if(itens){    
+        setTask(JSON.parse(itens))
+      }
+    }
+
+    LoadItens()
+  },[])
+  
+  const [task, setTask] = useState([])
   const [openModal, setOpenModal] = useState(false)
+  const [inputTask,setInputTask] = useState('')
+
+
+  async function saveItens(data = task){    
+    await AsyncStorage.setItem('@test', JSON.stringify(data))
+  }
+
+  function handleAddTask (){
+    if(inputTask=== ''){
+    return}
+
+    const data = {
+      key:inputTask.trim(),
+      task:inputTask.trim()
+    }
+    const tasks = ([...task,data])
+    setTask(tasks)
+    setOpenModal(false)
+    setInputTask('')
+    saveItens(tasks)
+  }
+
+  const ConcluiTarefa = useCallback((data)=>{
+    const find = task.filter((r)=>r.key !== data.key)
+    saveItens(find)
+    setTask(find)
+  })
+
   return(
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor='#171d31' barStyle="light-content"/>
@@ -25,7 +61,7 @@ export default function App(){
       showsHorizontalScrollIndicator={true}
       data={task}
       keyExtractor={(item)=>String(item.key)}
-      renderItem={({ item })=><TaskList data={item}/>}
+      renderItem={({ item })=><TaskList data={item}  ConcluiTarefa = {ConcluiTarefa}/>}
       />
 
       <Modal animationType='slide' transparent={false} visible={openModal}>
@@ -43,8 +79,13 @@ export default function App(){
             style={styles.inputTask}
             placeholder="Digite a sua tarefa:"
             multiline
+            value={inputTask}
+            onChangeText={(text)=>setInputTask(text)}
             />
-            <TouchableOpacity style={styles.handleAdd}> 
+            <TouchableOpacity 
+            style={styles.handleAdd}
+            onPress={handleAddTask}
+            > 
               <Text style={styles.handleAddText}>Adicionar Tarefa</Text>
             </TouchableOpacity>
           </Animatable.View>

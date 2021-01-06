@@ -3,14 +3,16 @@ import {Ionicons} from '@expo/vector-icons'
 import {View,Text, StyleSheet, TouchableOpacity} from 'react-native'
 import * as Animatable from 'react-native-animatable'
 
-const TaskList = ({data})=>{
+const TaskList = ({data, ConcluiTarefa})=>{
     return(
         <Animatable.View 
         style={styles.task}
         animation='bounceIn'
         useNativeDriver
         >
-            <TouchableOpacity>
+            <TouchableOpacity
+            onPress={()=>ConcluiTarefa(data)}
+            >
                 <Ionicons name='ios-checkmark-circle'size={30}/>
             </TouchableOpacity>
             <Text style={styles.taskValue}>
